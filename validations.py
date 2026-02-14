@@ -46,7 +46,7 @@ class Checks:
                 break
         return self.problems
 
-    def missing_employee_1(self):
+    def missing_employees(self):
         self.problems = []
         df_gtn = pd.read_excel(self.gtn_file)
         df_payrun = pd.read_excel(self.payrun_file)
@@ -54,25 +54,16 @@ class Checks:
         gtn_set = set(df_gtn["employee_id"].dropna())
         payrun_set = set(df_payrun["System Employee ID"].dropna())
 
-        missing_employees = payrun_set - gtn_set
+        missing_in_gtn = payrun_set - gtn_set
+        missing_in_payrun = gtn_set - payrun_set
 
-        if len(missing_employees) > 0:
-            self.problems.append(f"Employees present in Payrun.xlsx but not in GTN.xlsx: {missing_employees}.")
+        if missing_in_gtn:
+            self.problems.append(f"Employees present in Payrun but missing in GTN: {missing_in_gtn}.")
+        if missing_in_payrun:
+            self.problems.append(f"Employees present in GTN but missing in Payrun: {missing_in_payrun}.")
+
         return self.problems
 
-    def missing_employee_2(self):
-        self.problems = []
-        df_gtn = pd.read_excel(self.gtn_file)
-        df_payrun = pd.read_excel(self.payrun_file)
-
-        gtn_set = set(df_gtn["employee_id"].dropna())
-        payrun_set = set(df_payrun["System Employee ID"].dropna())
-
-        missing_employees = gtn_set - payrun_set
-
-        if len(missing_employees) > 0:
-            self.problems.append(f"Employees present in GTN.xlsx but not in Payrun.xlsx: {missing_employees}.")
-        return self.problems
 
 
 
