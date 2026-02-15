@@ -71,7 +71,6 @@ class Checks:
     def missing_pay_elements_1(self):
         self.problems = []
         expected_elements = set()
-        actual_elements = set()
 
         with open(self.mapping_file) as f:
             first_dict = json.load(f)
