@@ -29,7 +29,8 @@ class Checks:
     def check_headers_changed(self):
         self.problems = []
         required_fields = []
-        first_dict = json.load(open(self.mapping_file))
+        with open(self.mapping_file) as f:
+            first_dict = json.load(f)
         mappings_dict = first_dict["mappings"]
 
         for keys in mappings_dict.keys():
@@ -72,7 +73,8 @@ class Checks:
         expected_elements = set()
         actual_elements = set()
 
-        first_dict = json.load(open(self.mapping_file))
+        with open(self.mapping_file) as f:
+            first_dict = json.load(f)
         mappings_dict = first_dict["mappings"]
         not_used_list = first_dict["not_used"]
 
@@ -83,10 +85,7 @@ class Checks:
 
         df = pd.read_excel(self.gtn_file)
 
-        for column in df.columns:
-            #print(column)
-            if "element" in column.lower():
-                actual_elements.add(column)
+        actual_elements = set(df.columns[4:])
 
         missing = actual_elements - expected_elements
 
@@ -97,7 +96,8 @@ class Checks:
 
     def missing_pay_elements_2(self):
         self.problems = []
-        first_dict = json.load(open(self.mapping_file))
+        with open(self.mapping_file) as f:
+            first_dict = json.load(f)
         mappings_dict = first_dict["mappings"]
         issue_set = set()
 
@@ -131,16 +131,3 @@ class Checks:
             self.problems.append(f"The following columns in GTN.xlsx contains non-numeric values: {issues_set}.")
 
         return self.problems
-
-
-
-
-
-
-
-
-
-
-
-
-
