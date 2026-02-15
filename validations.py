@@ -99,7 +99,6 @@ class Checks:
         self.problems = []
         first_dict = json.load(open(self.mapping_file))
         mappings_dict = first_dict["mappings"]
-        df = pd.read_excel(self.gtn_file)
         issue_set = set()
 
         for key in mappings_dict.keys():
@@ -108,8 +107,8 @@ class Checks:
                 if get_vendor is None or get_vendor == "":
                     issue_set.add(key)
 
-            if issue_set:
-                self.problems.append(f"Pay elements in Payrun file do not have valid mapping: {issue_set}.")
+        if issue_set:
+            self.problems.append(f"Pay elements in Payrun file do not have valid mapping: {issue_set}.")
 
         return self.problems
 
