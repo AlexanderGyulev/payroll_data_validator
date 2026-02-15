@@ -20,7 +20,6 @@ class Checks:
     def check_line_breaks(self):
         self.problems = []
         df = pd.read_excel(self.gtn_file)
-        # print(df.to_string())
         empty_rows = df.isna().all(axis=1)
         if empty_rows.any(): # are there any Trues?
             self.problems.append(f"GTN.xlsx contains empty rows.")
