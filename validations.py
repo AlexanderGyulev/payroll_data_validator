@@ -39,11 +39,14 @@ class Checks:
                 required_fields.append(final_dict["vendor"])
 
         df = pd.read_excel(self.gtn_file)
+        issues_set = set()
 
         for element in required_fields:
             if element not in df.columns:
-                self.problems.append(f"GTN.xlsx has at least 1 missing column: {element}.")
-                break
+                issues_set.add(element)
+
+        if issues_set:
+            self.problems.append(f"GTN.xlsx has at least missing columns: {issues_set}.")
         return self.problems
 
     def missing_employees(self):
@@ -63,10 +66,11 @@ class Checks:
             self.problems.append(f"Employees present in GTN but missing in Payrun: {missing_in_payrun}.")
         return self.problems
 
-    def missing_pay_elements(self):
+    def missing_pay_elements_1(self):
         self.problems = []
         expected_elements = set()
         actual_elements = set()
+
         first_dict = json.load(open(self.mapping_file))
         mappings_dict = first_dict["mappings"]
         not_used_list = first_dict["not_used"]
@@ -80,7 +84,7 @@ class Checks:
 
         for column in df.columns:
             #print(column)
-            if "element" in column:
+            if "element" in column.lower():
                 actual_elements.add(column)
 
         missing = actual_elements - expected_elements
@@ -90,6 +94,19 @@ class Checks:
 
         return self.problems
 
+    def missing_pay_elements_2(self):
+        self.problems = []
+        first_dict = json.load(open(self.mapping_file))
+        mappings_dict = first_dict["mappings"]
+        df = pd.read_excel(self.gtn_file)
+
+        for key in mappings_dict.keys():
+            if mappings_dict[key]["map"]:
+                get_vendor = mappings_dict[key]["vendor"]
+                if get_vendor is None or get_vendor == "":
+                    self.problems.append(f"GTN.xlsx contains an unmapped element: {key}")
+                    break
+        return self.problems
 
 
 
