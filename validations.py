@@ -114,7 +114,30 @@ class Checks:
         return self.problems
 
     def are_pay_elements_numeric(self):
-        pass
+        self.problems = []
+        df = pd.read_excel(self.gtn_file)
+
+        pay_columns = df.columns[4:].tolist()
+        issues_set = set()
+
+        for element in pay_columns:
+            curr_series = df[element]
+            non_empty = curr_series.dropna()
+            convert_series = pd.to_numeric(non_empty, errors="coerce")
+
+            if pd.isna(convert_series).any():
+                issues_set.add(element)
+
+            if issues_set:
+                self.problems.append(f"The following columns in GTN.xlsx contains non-numeric values: {issues_set}.")
+
+        return self.problems
+
+
+
+
+
+
 
 
 
