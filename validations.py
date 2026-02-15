@@ -126,6 +126,6 @@ class Checks:
                 issues_set.add(element)
 
         if issues_set:
-            self.problems.append(f"The following columns in GTN.xlsx contains non-numeric values: {issues_set}.")
+            self.problems.append(f"The following columns in GTN.xlsx contain non-numeric values: {issues_set}.")
 
         return self.problems
