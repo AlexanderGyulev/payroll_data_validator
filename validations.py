@@ -100,15 +100,21 @@ class Checks:
         first_dict = json.load(open(self.mapping_file))
         mappings_dict = first_dict["mappings"]
         df = pd.read_excel(self.gtn_file)
+        issue_set = set()
 
         for key in mappings_dict.keys():
             if mappings_dict[key]["map"]:
                 get_vendor = mappings_dict[key]["vendor"]
                 if get_vendor is None or get_vendor == "":
-                    self.problems.append(f"GTN.xlsx contains an unmapped element: {key}")
-                    break
+                    issue_set.add(key)
+
+            if issue_set:
+                self.problems.append(f"Pay elements in Payrun file do not have valid mapping: {issue_set}.")
+
         return self.problems
 
+    def are_pay_elements_numeric(self):
+        pass
 
 
 
