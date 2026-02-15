@@ -46,7 +46,8 @@ class Checks:
                 issues_set.add(element)
 
         if issues_set:
-            self.problems.append(f"GTN.xlsx has at least missing columns: {issues_set}.")
+            self.problems.append(f"GTN.xlsx has missing header columns: {issues_set}.")
+
         return self.problems
 
     def missing_employees(self):
