@@ -61,8 +61,39 @@ class Checks:
             self.problems.append(f"Employees present in Payrun but missing in GTN: {missing_in_gtn}.")
         if missing_in_payrun:
             self.problems.append(f"Employees present in GTN but missing in Payrun: {missing_in_payrun}.")
+        return self.problems
+
+    def missing_pay_elements(self):
+        self.problems = []
+        expected_elements = set()
+        actual_elements = set()
+        first_dict = json.load(open(self.mapping_file))
+        mappings_dict = first_dict["mappings"]
+        not_used_list = first_dict["not_used"]
+
+        for key in mappings_dict.keys():
+            expected_elements.add(mappings_dict[key]["vendor"])
+        for element in not_used_list:
+            expected_elements.add(element["vendor"])
+
+        df = pd.read_excel(self.gtn_file)
+
+        for column in df.columns:
+            #print(column)
+            if "element" in column:
+                actual_elements.add(column)
+
+        missing = actual_elements - expected_elements
+
+        if missing:
+            self.problems.append(f"GTN.xlsx contains unmapped elements: {missing}.")
 
         return self.problems
+
+
+
+
+
 
 
 
