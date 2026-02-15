@@ -28,16 +28,7 @@ Checks whether the GTN file contains fully empty rows.
 ---
 
 ### 3. The GTN file header structure has changed
-Validates that required header columns (based on `mapping.json` where `map = true`) exist in the GTN file.
-
-This detects structural changes such as:
-- Missing expected vendor columns
-- Header row modifications
-
-Potential improvements in the future:
-- Detect duplicated header rows
-- Validate header row position explicitly
-- Detect unexpected additional header layers
+Validates that the file doesn't contain a second header.
 
 ---
 
