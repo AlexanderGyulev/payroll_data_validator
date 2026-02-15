@@ -10,7 +10,6 @@ class Checks:
         self.mapping_file = data_folder + "/mapping.json"
 
     def check_file_type(self):
-        self.problems = []
         try:
             pd.read_excel(self.gtn_file)
         except Exception as e:
@@ -18,7 +17,6 @@ class Checks:
         return self.problems
 
     def check_line_breaks(self):
-        self.problems = []
         df = pd.read_excel(self.gtn_file)
         empty_rows = df.isna().all(axis=1)
         if empty_rows.any(): # are there any Trues?
@@ -26,32 +24,28 @@ class Checks:
         return self.problems
 
     def check_headers_changed(self):
-        self.problems = []
-        required_fields = []
-        with open(self.mapping_file) as f:
-            first_dict = json.load(f)
-        mappings_dict = first_dict["mappings"]
-
-        for keys in mappings_dict.keys():
-            final_dict = mappings_dict[keys]
-
-            if final_dict["map"]:
-                required_fields.append(final_dict["vendor"])
-
         df = pd.read_excel(self.gtn_file)
-        issues_set = set()
+        if df.empty:
+            return self.problems
 
-        for element in required_fields:
-            if element not in df.columns:
-                issues_set.add(element)
+        first_row = df.iloc[0].dropna()
 
-        if issues_set:
-            self.problems.append(f"GTN.xlsx has missing header columns: {issues_set}.")
+        if first_row.empty:
+            return self.problems
+
+        all_strings = True
+
+        for value in first_row:
+            if not isinstance(value, str):
+                all_strings = False
+                break
+
+        if all_strings:
+            self.problems.append("GTN.xlsx contains a second header row.")
 
         return self.problems
 
     def missing_employees(self):
-        self.problems = []
         df_gtn = pd.read_excel(self.gtn_file)
         df_payrun = pd.read_excel(self.payrun_file)
 
@@ -68,7 +62,6 @@ class Checks:
         return self.problems
 
     def missing_pay_elements_1(self):
-        self.problems = []
         expected_elements = set()
 
         with open(self.mapping_file) as f:
@@ -93,7 +86,6 @@ class Checks:
         return self.problems
 
     def missing_pay_elements_2(self):
-        self.problems = []
         with open(self.mapping_file) as f:
             first_dict = json.load(f)
         mappings_dict = first_dict["mappings"]
@@ -111,7 +103,6 @@ class Checks:
         return self.problems
 
     def are_pay_elements_numeric(self):
-        self.problems = []
         df = pd.read_excel(self.gtn_file)
 
         pay_columns = df.columns[4:].tolist()
